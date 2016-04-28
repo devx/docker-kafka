@@ -29,4 +29,4 @@ EXPOSE 9092 19092
 
 VOLUME ["${KAFKA_DIR}", "${KAFKA_JKS_HOME}", "${KAFKA_LOGS}"]
 
-ENTRYPOINT ["/bin/bash", "-xe", "${KAFKA_HOME}/bin/start-kafka.sh"]
+ENTRYPOINT ["/bin/bash", "-xe", "/opt/kafka/bin/start-kafka.sh"]
