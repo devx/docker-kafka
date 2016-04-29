@@ -32,7 +32,18 @@ fi
 if [ ! -z "$KAFKA_LOG_DIR" ]; then
     add_config_param "log.dirs" ${KAFKA_LOG_DIR}
     echo "kafka log directory: ${KAFKA_LOG_DIR}"
-    sed -r -i "s/(log.dirs)=(.*)/\1=${KAFKA_LOG_DIR}/g" $KAFKA_HOME/config/server.properties
+    sed -r -i "s/(log.dirs)=(.*)/\1=-1/g" $KAFKA_HOME/config/server.properties
+fi
+
+# Set the broker id
+if [ -z "$KAFKA_BROKER_ID" ]; then
+    add_config_param "broker.id" "-1"
+    echo "kafka broker id set to auto generate: -1"
+    sed -r -i "s/(broker.id)=(.*)/\1=${KAFKA_BROKER_ID}/g" $KAFKA_HOME/config/server.properties
+else
+    add_config_param "broker.id" "${KAFKA_BROKER_ID}"
+    echo "kafka broker id set to: ${KAFKA_BROKER_ID}"
+    sed -r -i "s/(broker.id)=(.*)/\1=${KAFKA_BROKER_ID}/g" $KAFKA_HOME/config/server.properties
 fi
 
 # Set the zookeeper
