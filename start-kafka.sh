@@ -36,7 +36,7 @@ if [ ! -z "$KAFKA_LOG_DIR" ]; then
 fi
 
 # Set the broker id
-if [ -z "$KAFKA_BROKER_ID" ]; then
+if [ ! -z "$KAFKA_BROKER_ID" ]; then
     add_config_param "broker.id" "-1"
     echo "kafka broker id set to auto generate: -1"
     sed -r -i "s/(broker.id)=(.*)/\1=${KAFKA_BROKER_ID}/g" $KAFKA_HOME/config/server.properties
