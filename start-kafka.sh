@@ -75,7 +75,7 @@ if [ ! -z "${AUTO_CREATE_TOPICS}" ]; then
 fi
 
 ## SSL
-add_config_param "security.inter.broker.protocol" "SSL"
+add_config_param "security.inter.broker.protocol" ${INTER_BROKER_PROTOCOL}
 add_config_param "ssl.enabled.protocols" "TLSv1.2,TLSv1.1,TLSv1"
 
 if [ ! -z "${SUPER_USERS}" ]; then
