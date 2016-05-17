@@ -110,9 +110,6 @@ fi
 
 if [ ! -z "${KAFKA_AUTHORIZER_CLASS_NAME}" ]; then
     add_config_param "authorizer.class.name" ${KAFKA_AUTHORIZER_CLASS_NAME}
-else
-
-    add_config_param "authorizer.class.name" "kafka.security.auth.SimpleAclAuthorizer"
 fi
 
 if [ ! -z "${KAFKA_ACL_AUTH}" ]; then
