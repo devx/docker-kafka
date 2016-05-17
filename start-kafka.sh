@@ -32,7 +32,7 @@ fi
 if [ ! -z "${KAFKA_LOG_DIR}" ]; then
     add_config_param "log.dirs" ${KAFKA_LOG_DIR}
     echo "kafka log directory: ${KAFKA_LOG_DIR}"
-    sed -r -i "s/(log.dirs)=(.*)/\1=-1/g" ${KAFKA_HOME}/config/server.properties
+    sed -r -i "s|(log\.dirs)=.*|\1=${KAFKA_LOG_DIRS}|g" ${KAFKA_HOME}/config/server.properties
 fi
 
 # Set the broker id
@@ -62,6 +62,12 @@ if [ ! -z "${LOG_RETENTION_BYTES}" ]; then
     sed -r -i "s/#(log.retention.bytes)=(.*)/\1=${LOG_RETENTION_BYTES}/g" ${KAFKA_HOME}/config/server.properties
 fi
 
+if [ ! -z "${KAFKA_PRINCIPAL_BUILDER_CLASS}" ]; then
+    echo "KAFKA_PRINCIPAL_BUILDER_CLASS: ${KAFKA_PRINCIPAL_BUILDER_CLASS}"
+    add_config_param "principal.builder.class" ${KAFKA_PRINCIPAL_BUILDER_CLASS}
+fi
+
+
 # Configure the default number of log partitions per topic
 if [ ! -z "${NUM_PARTITIONS}" ]; then
     echo "default number of partition: ${NUM_PARTITIONS}"
@@ -75,11 +81,11 @@ if [ ! -z "${AUTO_CREATE_TOPICS}" ]; then
 fi
 
 ## SSL
-add_config_param "security.inter.broker.protocol" ${INTER_BROKER_PROTOCOL}
-add_config_param "ssl.enabled.protocols" "TLSv1.2,TLSv1.1,TLSv1"
-
-if [ ! -z "${SUPER_USERS}" ]; then
-    add_config_param "super.users" ${SUPER_USERS}
+if [ ! -z "${INTER_BROKER_PROTOCOL}" ]; then
+    add_config_param "ssl.client.auth" ${SSL_CLIENT_AUTH}
+    add_config_param "security.inter.broker.protocol" ${INTER_BROKER_PROTOCOL}
+    add_config_param "ssl.enabled.protocols" ${SSL_ENABLED_PROTOCOLS}
+    add_config_param "ssl.cipher.suites" ${SSL_CIPHER_SUITES}
 fi
 
 add_config_param "listeners" "PLAINTEXT://:${ADVERTISED_PORT},SSL://:${ADVERTISED_SSL_PORT}"
@@ -98,9 +104,19 @@ if [ ! -z "${SSL_TRUSTSTORE_LOCATION}" ]; then
 fi
 
 # Configure auth
-if [ ! -z "${SSL_CLIENT_AUTH}" ]; then
-    add_config_param "ssl.client.auth" ${SSL_CLIENT_AUTH}
+if [ ! -z "${SUPER_USERS}" ]; then
+    add_config_param "super.users" ${SUPER_USERS}
+fi
+
+if [ ! -z "${KAFKA_AUTHORIZER_CLASS_NAME}" ]; then
+    add_config_param "authorizer.class.name" ${KAFKA_AUTHORIZER_CLASS_NAME}
+else
+
     add_config_param "authorizer.class.name" "kafka.security.auth.SimpleAclAuthorizer"
+fi
+
+if [ ! -z "${KAFKA_ACL_AUTH}" ]; then
+    add_config_param "zookeeper.set.acl" "true"
 
     sed -r -i "s|(log4j.logger.kafka.authorizer.logger)=(.*)|\1=DEBUG, authorizerAppender|g" ${KAFKA_HOME}/config/log4j.properties
 fi
